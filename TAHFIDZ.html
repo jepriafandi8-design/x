@@ -1,0 +1,872 @@
+<!doctype html>
+<html lang="id" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistem Pengelolaan Tahfidz Santri</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+    body {
+      box-sizing: border-box;
+    }
+    .font-arabic {
+      font-family: 'Amiri', serif;
+    }
+    .font-main {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .islamic-pattern {
+      background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M30 0l30 30-30 30L0 30 30 0zm0 10L10 30l20 20 20-20-20-20z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in {
+      animation: fadeIn 0.4s ease-out forwards;
+    }
+    .toast {
+      animation: slideIn 0.3s ease-out forwards;
+    }
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    .tab-active {
+      border-bottom: 3px solid #059669;
+      color: #059669;
+    }
+    .tab-inactive {
+      border-bottom: 3px solid transparent;
+      color: #6b7280;
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+ </head>
+ <body class="h-full font-main">
+  <div id="app" class="h-full w-full overflow-auto" style="background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 50%, #f0f9ff 100%);"><!-- Header -->
+   <header id="header" class="islamic-pattern" style="background: linear-gradient(135deg, #166534 0%, #15803d 50%, #166534 100%);">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+     <div class="text-center"><!-- Islamic Ornament -->
+      <div class="flex justify-center mb-3">
+       <svg class="w-16 h-16 text-amber-300" viewbox="0 0 100 100" fill="currentColor"><path d="M50 5L55 20H70L58 30L63 45L50 35L37 45L42 30L30 20H45L50 5Z" /> <circle cx="50" cy="60" r="25" fill="none" stroke="currentColor" stroke-width="2" /> <path d="M50 40v40M35 60h30" stroke="currentColor" stroke-width="2" /> <circle cx="50" cy="60" r="8" fill="currentColor" opacity="0.3" />
+       </svg>
+      </div>
+      <p class="font-arabic text-amber-200 text-xl mb-2">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
+      <h1 id="app-title" class="text-2xl sm:text-3xl font-bold text-white mb-1">Sistem Pengelolaan Tahfidz Santri</h1>
+      <p id="org-name" class="text-emerald-100 text-sm sm:text-base">Yayasan Ibnu Hajar Asqalani</p>
+     </div>
+    </div>
+   </header><!-- Tab Navigation -->
+   <div class="bg-white border-b border-gray-200 sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+     <div class="flex gap-8 overflow-x-auto"><button id="tab-dashboard" class="tab-btn py-4 px-1 font-semibold transition-all tab-active" data-tab="dashboard">
+       <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+       </svg> Dashboard </button> <button id="tab-form" class="tab-btn py-4 px-1 font-semibold transition-all tab-inactive" data-tab="form">
+       <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+       </svg> Input Data </button> <button id="tab-announcement" class="tab-btn py-4 px-1 font-semibold transition-all tab-inactive" data-tab="announcement">
+       <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.961 1.961 0 01-2.437-1.802l-.37-3.914a2 2 0 00-1.946-1.659H2.167M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-4a.75.75 0 100-1.5.75.75 0 000 1.5z" />
+       </svg> Pengumuman Wali </button>
+     </div>
+    </div>
+   </div><!-- Main Content -->
+   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"><!-- Dashboard Tab -->
+    <div id="tab-content-dashboard" class="tab-content"><!-- Stats Cards -->
+     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div class="bg-white rounded-xl shadow-sm border border-emerald-100 p-4 hover:shadow-md transition-shadow">
+       <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center">
+         <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+         </svg>
+        </div>
+        <div>
+         <p class="text-xs text-gray-500">Total Santri</p>
+         <p id="total-santri" class="text-xl font-bold text-gray-800">0</p>
+        </div>
+       </div>
+      </div>
+      <div class="bg-white rounded-xl shadow-sm border border-emerald-100 p-4 hover:shadow-md transition-shadow">
+       <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center">
+         <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+         </svg>
+        </div>
+        <div>
+         <p class="text-xs text-gray-500">Nilai A</p>
+         <p id="nilai-a" class="text-xl font-bold text-gray-800">0</p>
+        </div>
+       </div>
+      </div>
+      <div class="bg-white rounded-xl shadow-sm border border-emerald-100 p-4 hover:shadow-md transition-shadow">
+       <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+         <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+         </svg>
+        </div>
+        <div>
+         <p class="text-xs text-gray-500">Nilai B</p>
+         <p id="nilai-b" class="text-xl font-bold text-gray-800">0</p>
+        </div>
+       </div>
+      </div>
+      <div class="bg-white rounded-xl shadow-sm border border-emerald-100 p-4 hover:shadow-md transition-shadow">
+       <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center">
+         <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+         </svg>
+        </div>
+        <div>
+         <p class="text-xs text-gray-500">Nilai C/D</p>
+         <p id="nilai-cd" class="text-xl font-bold text-gray-800">0</p>
+        </div>
+       </div>
+      </div>
+     </div><!-- Data Table Section -->
+     <div class="bg-white rounded-2xl shadow-sm border border-emerald-100 overflow-hidden">
+      <div class="bg-gradient-to-r from-emerald-600 to-emerald-700 px-6 py-4 flex items-center justify-between">
+       <h2 class="text-lg font-semibold text-white flex items-center gap-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+        </svg> Dashboard Data Hafalan</h2><span id="data-count" class="bg-white/20 text-white text-sm px-3 py-1 rounded-full">0 Data</span>
+      </div>
+      <div class="overflow-x-auto">
+       <table class="w-full">
+        <thead>
+         <tr class="bg-gray-50 border-b border-gray-100">
+          <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">No</th>
+          <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Nama Santri</th>
+          <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Hafalan Bulan Ini</th>
+          <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Total Hafalan</th>
+          <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Nilai</th>
+          <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Ustadz Pengajar</th>
+          <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Aksi</th>
+         </tr>
+        </thead>
+        <tbody id="data-table-body" class="divide-y divide-gray-100"><!-- Data will be populated here -->
+        </tbody>
+       </table><!-- Empty State -->
+       <div id="empty-state" class="hidden py-16 text-center">
+        <div class="w-20 h-20 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+         <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+         </svg>
+        </div>
+        <h3 class="text-lg font-medium text-gray-900 mb-2">Belum Ada Data Santri</h3>
+        <p class="text-gray-500">Mulai dengan menambahkan data hafalan santri pertama Anda</p>
+       </div>
+      </div><!-- Send All Button -->
+      <div id="send-all-container" class="hidden border-t border-gray-100 bg-gray-50 px-6 py-4 flex items-center justify-between">
+       <div class="text-sm text-gray-600">
+        <p class="font-medium">Kirim Laporan Semua Santri</p>
+        <p class="text-xs mt-1">Mengirimkan laporan lengkap semua data santri ke Admin melalui WhatsApp</p>
+       </div><button id="send-all-btn" class="px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white font-semibold rounded-lg hover:from-green-700 hover:to-green-800 focus:ring-4 focus:ring-green-200 transition-all flex items-center gap-2">
+        <svg class="w-5 h-5" viewbox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+        </svg> Kirim Semua ke Admin </button>
+      </div>
+     </div>
+    </div><!-- Form Tab -->
+    <div id="tab-content-form" class="tab-content hidden">
+     <div class="bg-white rounded-2xl shadow-sm border border-emerald-100 mb-8 overflow-hidden">
+      <div class="bg-gradient-to-r from-emerald-600 to-emerald-700 px-6 py-4">
+       <h2 class="text-lg font-semibold text-white flex items-center gap-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+        </svg> Input Data Hafalan Santri</h2>
+      </div>
+      <form id="input-form" class="p-6">
+       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div><label for="nama_santri" class="block text-sm font-medium text-gray-700 mb-2">Nama Santri</label> <input type="text" id="nama_santri" name="nama_santri" required class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all" placeholder="Masukkan nama santri">
+        </div>
+        <div><label for="hafalan_bulan_ini" class="block text-sm font-medium text-gray-700 mb-2">Hafalan Bulan Ini</label> <input type="text" id="hafalan_bulan_ini" name="hafalan_bulan_ini" required class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all" placeholder="Contoh: Juz 30 / Surah Al-Mulk">
+        </div>
+        <div><label for="total_hafalan" class="block text-sm font-medium text-gray-700 mb-2">Total Hafalan</label> <input type="text" id="total_hafalan" name="total_hafalan" required class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all" placeholder="Contoh: 5 Juz / 30 Surah">
+        </div>
+        <div><label for="nilai" class="block text-sm font-medium text-gray-700 mb-2">Nilai</label> <select id="nilai" name="nilai" required class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all bg-white"> <option value="">Pilih Nilai</option> <option value="A">A - Mumtaz (Sangat Baik)</option> <option value="B">B - Jayyid Jiddan (Baik)</option> <option value="C">C - Jayyid (Cukup)</option> <option value="D">D - Maqbul (Perlu Bimbingan)</option> </select>
+        </div>
+        <div><label for="nama_ustadz" class="block text-sm font-medium text-gray-700 mb-2">Nama Ustadz Pengajar</label> <input type="text" id="nama_ustadz" name="nama_ustadz" required class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all" placeholder="Masukkan nama ustadz">
+        </div>
+        <div class="flex items-end"><button type="submit" id="submit-btn" class="w-full px-6 py-3 bg-gradient-to-r from-emerald-600 to-emerald-700 text-white font-semibold rounded-lg hover:from-emerald-700 hover:to-emerald-800 focus:ring-4 focus:ring-emerald-200 transition-all flex items-center justify-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+          </svg><span id="submit-text">Simpan Data</span> </button>
+        </div>
+       </div>
+      </form>
+     </div>
+    </div><!-- Announcement Tab -->
+    <div id="tab-content-announcement" class="tab-content hidden">
+     <div class="bg-white rounded-2xl shadow-sm border border-emerald-100 overflow-hidden">
+      <div class="bg-gradient-to-r from-emerald-600 to-emerald-700 px-6 py-4">
+       <h2 class="text-lg font-semibold text-white flex items-center gap-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.961 1.961 0 01-2.437-1.802l-.37-3.914a2 2 0 00-1.946-1.659H2.167M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-4a.75.75 0 100-1.5.75.75 0 000 1.5z" />
+        </svg> Pengumuman untuk Wali Santri</h2>
+      </div><!-- Announcement Preview -->
+      <div id="announcement-preview" class="p-8">
+       <div class="bg-gradient-to-br from-emerald-50 to-teal-50 border-2 border-emerald-200 rounded-2xl p-8 mb-6"><!-- Preview content will be generated here -->
+       </div><!-- Action Buttons -->
+       <div class="flex flex-col sm:flex-row gap-4 justify-center"><button id="print-btn" class="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-all flex items-center justify-center gap-2">
+         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4H9a2 2 0 00-2 2v2a2 2 0 002 2h10a2 2 0 002-2v-2a2 2 0 00-2-2h-2m-4-4V5a2 2 0 012-2h6a2 2 0 012 2v9m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V9a2 2 0 00-2-2h-2a2 2 0 00-2 2v8z" />
+         </svg> Cetak </button> <button id="copy-btn" class="px-6 py-3 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition-all flex items-center justify-center gap-2">
+         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+         </svg> Salin Teks </button> <button id="whatsapp-announcement-btn" class="px-6 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-all flex items-center justify-center gap-2">
+         <svg class="w-5 h-5" viewbox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+         </svg> Kirim ke Admin </button>
+       </div>
+      </div><!-- Empty Announcement State -->
+      <div id="empty-announcement" class="hidden py-16 text-center px-6">
+       <div class="w-20 h-20 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+        <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+       </div>
+       <h3 class="text-lg font-medium text-gray-900 mb-2">Belum Ada Data Santri</h3>
+       <p class="text-gray-500">Tambahkan data santri terlebih dahulu untuk melihat pengumuman</p>
+      </div>
+     </div>
+    </div><!-- Footer -->
+    <footer class="mt-8 text-center text-sm text-gray-500 pb-8">
+     <p class="font-arabic text-lg text-emerald-700 mb-2">وَمَنْ يَتَّقِ اللَّهَ يَجْعَلْ لَهُ مَخْرَجًا</p>
+     <p>© 2024 Yayasan Ibnu Hajar Asqalani. Semua hak dilindungi.</p>
+    </footer>
+   </main><!-- Toast Container -->
+   <div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-2"></div><!-- Delete Confirmation Modal -->
+   <div id="delete-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4" style="background: rgba(0,0,0,0.5);">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 animate-fade-in">
+     <div class="text-center">
+      <div class="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
+       <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+       </svg>
+      </div>
+      <h3 class="text-xl font-bold text-gray-900 mb-2">Hapus Data Santri?</h3>
+      <p id="delete-santri-name" class="text-gray-600 mb-6">Apakah Anda yakin ingin menghapus data ini?</p>
+      <div class="flex gap-3"><button id="cancel-delete" class="flex-1 px-4 py-3 bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition-all"> Batal </button> <button id="confirm-delete" class="flex-1 px-4 py-3 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-all"> Ya, Hapus </button>
+      </div>
+     </div>
+    </div>
+   </div>
+  </div>
+  <script>
+    // Default configuration
+    const defaultConfig = {
+      app_title: 'Sistem Pengelolaan Tahfidz Santri',
+      organization_name: 'Yayasan Ibnu Hajar Asqalani',
+      admin_phone: '081276888821',
+      announcement_title: 'Laporan Hafalan Santri Bulan Ini',
+      announcement_footer: 'Semoga Allah meridai kami dan ustadz-ustadzah kami',
+      background_color: '#f0fdf4',
+      header_color: '#166534',
+      text_color: '#1f2937',
+      primary_action_color: '#059669',
+      secondary_color: '#ffffff'
+    };
+
+    let config = { ...defaultConfig };
+    let santriData = [];
+    let deleteTargetId = null;
+
+    // Show toast notification
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = `toast px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 ${
+        type === 'success' ? 'bg-emerald-600 text-white' : 
+        type === 'error' ? 'bg-red-600 text-white' : 
+        'bg-blue-600 text-white'
+      }`;
+      
+      const icon = type === 'success' ? 
+        '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>' :
+        type === 'error' ?
+        '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>' :
+        '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+      
+      toast.innerHTML = `${icon}<span>${message}</span>`;
+      container.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(100%)';
+        toast.style.transition = 'all 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
+    // Get nilai badge color
+    function getNilaiBadge(nilai) {
+      const badges = {
+        'A': 'bg-emerald-100 text-emerald-800 border-emerald-200',
+        'B': 'bg-blue-100 text-blue-800 border-blue-200',
+        'C': 'bg-amber-100 text-amber-800 border-amber-200',
+        'D': 'bg-red-100 text-red-800 border-red-200'
+      };
+      const labels = {
+        'A': 'Mumtaz',
+        'B': 'Jayyid Jiddan',
+        'C': 'Jayyid',
+        'D': 'Maqbul'
+      };
+      return `<span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${badges[nilai] || badges['D']}">${nilai} - ${labels[nilai] || labels['D']}</span>`;
+    }
+
+    // Generate announcement text for all santri
+    function generateAnnouncementText() {
+      if (santriData.length === 0) return '';
+
+      let text = `*🕌 ${config.announcement_title}*\n`;
+      text += `*Yayasan: ${config.organization_name}*\n\n`;
+      text += `بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ\n\n`;
+      text += `📋 *DAFTAR PENCAPAIAN HAFALAN SANTRI*\n`;
+      text += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+
+      const sortedData = [...santriData].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+      sortedData.forEach((record, index) => {
+        text += `${index + 1}️⃣ *${record.nama_santri}*\n`;
+        text += `   📖 Hafalan Bulan Ini: ${record.hafalan_bulan_ini}\n`;
+        text += `   📊 Total Hafalan: ${record.total_hafalan}\n`;
+        text += `   ⭐ Nilai: ${record.nilai}\n`;
+        text += `   👨‍🏫 Ustadz: ${record.nama_ustadz}\n\n`;
+      });
+
+      text += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+      text += `📊 *RINGKASAN STATISTIK*\n`;
+      text += `✅ Total Santri: ${santriData.length}\n`;
+      text += `🌟 Nilai A (Mumtaz): ${santriData.filter(s => s.nilai === 'A').length}\n`;
+      text += `📖 Nilai B (Jayyid Jiddan): ${santriData.filter(s => s.nilai === 'B').length}\n`;
+      text += `📝 Nilai C (Jayyid): ${santriData.filter(s => s.nilai === 'C').length}\n`;
+      text += `⚠️ Nilai D (Maqbul): ${santriData.filter(s => s.nilai === 'D').length}\n\n`;
+
+      text += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+      text += `${config.announcement_footer}\n\n`;
+      text += `جَزَاكَ اللَّهُ خَيْرًا\n`;
+      text += `Hormat Pengasuh dan Guru-guru\n`;
+      text += `${config.organization_name}`;
+
+      return text;
+    }
+
+    // Render announcement preview
+    function renderAnnouncementPreview() {
+      const preview = document.getElementById('announcement-preview');
+      const emptyAnnouncement = document.getElementById('empty-announcement');
+
+      if (santriData.length === 0) {
+        preview.innerHTML = '';
+        emptyAnnouncement.classList.remove('hidden');
+        return;
+      }
+
+      emptyAnnouncement.classList.add('hidden');
+
+      const sortedData = [...santriData].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+      let html = `
+        <div class="font-arabic text-center mb-6">
+          <p class="text-amber-700 text-lg font-bold">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
+        </div>
+        <h1 class="text-3xl font-bold text-emerald-800 text-center mb-2">${config.announcement_title}</h1>
+        <p class="text-center text-gray-600 mb-6 border-b border-emerald-300 pb-4">Yayasan ${config.organization_name}</p>
+        
+        <div class="mb-8">
+      `;
+
+      sortedData.forEach((record, index) => {
+        html += `
+          <div class="mb-6 pb-6 border-b border-emerald-200 last:border-b-0">
+            <div class="flex items-center gap-3 mb-2">
+              <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-600 text-white text-xs font-bold">${index + 1}</span>
+              <p class="text-xl font-bold text-emerald-800">${record.nama_santri}</p>
+            </div>
+            <div class="ml-9 space-y-1 text-sm">
+              <p><span class="font-semibold text-gray-700">Hafalan Bulan Ini:</span> ${record.hafalan_bulan_ini}</p>
+              <p><span class="font-semibold text-gray-700">Total Hafalan:</span> ${record.total_hafalan}</p>
+              <p><span class="font-semibold text-gray-700">Nilai:</span> <span class="inline-block px-3 py-1 rounded-full text-xs font-bold ${
+                record.nilai === 'A' ? 'bg-emerald-200 text-emerald-800' :
+                record.nilai === 'B' ? 'bg-blue-200 text-blue-800' :
+                record.nilai === 'C' ? 'bg-amber-200 text-amber-800' :
+                'bg-red-200 text-red-800'
+              }">${record.nilai}</span></p>
+              <p><span class="font-semibold text-gray-700">Ustadz Pengajar:</span> ${record.nama_ustadz}</p>
+            </div>
+          </div>
+        `;
+      });
+
+      html += `
+        </div>
+        
+        <div class="bg-emerald-100 rounded-lg p-4 mb-6 border-l-4 border-emerald-600">
+          <p class="font-semibold text-emerald-900 mb-2">📊 Ringkasan Statistik</p>
+          <div class="grid grid-cols-2 gap-2 text-sm text-emerald-800">
+            <p>✅ Total Santri: <span class="font-bold">${santriData.length}</span></p>
+            <p>🌟 Nilai A: <span class="font-bold">${santriData.filter(s => s.nilai === 'A').length}</span></p>
+            <p>📖 Nilai B: <span class="font-bold">${santriData.filter(s => s.nilai === 'B').length}</span></p>
+            <p>⚠️ Nilai C/D: <span class="font-bold">${santriData.filter(s => s.nilai === 'C' || s.nilai === 'D').length}</span></p>
+          </div>
+        </div>
+
+        <div class="text-center border-t border-emerald-300 pt-6">
+          <p class="font-arabic text-amber-700 mb-2">جَزَاكَ اللَّهُ خَيْرًا</p>
+          <p class="text-sm text-gray-600 italic mb-1">${config.announcement_footer}</p>
+          <p class="text-xs text-gray-500">${config.organization_name}</p>
+        </div>
+      `;
+
+      preview.innerHTML = html;
+    }
+
+    // Send all data to Admin via WhatsApp
+    function sendAllToAdmin() {
+      if (santriData.length === 0) {
+        showToast('Tidak ada data untuk dikirim', 'error');
+        return;
+      }
+
+      const phone = config.admin_phone.replace(/\D/g, '');
+      const message = generateAnnouncementText();
+      const waLink = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+      
+      window.open(waLink, '_blank', 'noopener,noreferrer');
+      showToast('Membuka WhatsApp...', 'info');
+    }
+
+    // Copy announcement to clipboard
+    function copyAnnouncementToClipboard() {
+      const text = generateAnnouncementText();
+      navigator.clipboard.writeText(text).then(() => {
+        showToast('Teks pengumuman berhasil disalin', 'success');
+      }).catch(() => {
+        showToast('Gagal menyalin teks', 'error');
+      });
+    }
+
+    // Print announcement
+    function printAnnouncement() {
+      const printWindow = window.open('', '_blank');
+      const sortedData = [...santriData].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+      let html = `
+        <!DOCTYPE html>
+        <html lang="id">
+        <head>
+          <meta charset="UTF-8">
+          <title>Pengumuman Hafalan Santri</title>
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              max-width: 800px;
+              margin: 0 auto;
+              padding: 20px;
+              background: white;
+            }
+            .header {
+              text-align: center;
+              margin-bottom: 30px;
+            }
+            .header h1 {
+              color: #166534;
+              margin: 10px 0;
+            }
+            .header p {
+              color: #666;
+              margin: 5px 0;
+            }
+            .arabic {
+              font-size: 18px;
+              color: #b45309;
+              margin: 10px 0;
+            }
+            .santri-list {
+              margin-bottom: 20px;
+            }
+            .santri-item {
+              margin-bottom: 15px;
+              padding-bottom: 15px;
+              border-bottom: 1px solid #ddd;
+            }
+            .santri-item:last-child {
+              border-bottom: none;
+            }
+            .santri-name {
+              font-weight: bold;
+              color: #166534;
+              font-size: 16px;
+              margin-bottom: 5px;
+            }
+            .santri-detail {
+              font-size: 14px;
+              color: #333;
+              margin: 3px 0;
+              padding-left: 20px;
+            }
+            .nilai-badge {
+              display: inline-block;
+              padding: 4px 8px;
+              border-radius: 4px;
+              font-weight: bold;
+              font-size: 12px;
+            }
+            .nilai-a { background: #d1fae5; color: #065f46; }
+            .nilai-b { background: #dbeafe; color: #0c2d6b; }
+            .nilai-c { background: #fef3c7; color: #78350f; }
+            .nilai-d { background: #fee2e2; color: #7f1d1d; }
+            .stats {
+              background: #f0fdf4;
+              border-left: 4px solid #166534;
+              padding: 15px;
+              margin: 20px 0;
+              border-radius: 4px;
+            }
+            .stats h3 {
+              color: #166534;
+              margin-top: 0;
+            }
+            .stats-grid {
+              display: grid;
+              grid-template-columns: 1fr 1fr;
+              gap: 10px;
+              font-size: 14px;
+            }
+            .footer {
+              text-align: center;
+              margin-top: 30px;
+              border-top: 1px solid #ddd;
+              padding-top: 20px;
+              font-size: 12px;
+              color: #666;
+            }
+            @media print {
+              body { margin: 0; }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <p class="arabic">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
+            <h1>${config.announcement_title}</h1>
+            <p><strong>${config.organization_name}</strong></p>
+          </div>
+
+          <div class="santri-list">
+      `;
+
+      sortedData.forEach((record, index) => {
+        const nilaiBadgeClass = 
+          record.nilai === 'A' ? 'nilai-a' :
+          record.nilai === 'B' ? 'nilai-b' :
+          record.nilai === 'C' ? 'nilai-c' : 'nilai-d';
+
+        html += `
+          <div class="santri-item">
+            <div class="santri-name">${index + 1}. ${record.nama_santri}</div>
+            <div class="santri-detail">📖 Hafalan Bulan Ini: ${record.hafalan_bulan_ini}</div>
+            <div class="santri-detail">📊 Total Hafalan: ${record.total_hafalan}</div>
+            <div class="santri-detail">⭐ Nilai: <span class="nilai-badge ${nilaiBadgeClass}">${record.nilai}</span></div>
+            <div class="santri-detail">👨‍🏫 Ustadz: ${record.nama_ustadz}</div>
+          </div>
+        `;
+      });
+
+      html += `
+          </div>
+
+          <div class="stats">
+            <h3>📊 Ringkasan Statistik</h3>
+            <div class="stats-grid">
+              <div>✅ Total Santri: <strong>${santriData.length}</strong></div>
+              <div>🌟 Nilai A: <strong>${santriData.filter(s => s.nilai === 'A').length}</strong></div>
+              <div>📖 Nilai B: <strong>${santriData.filter(s => s.nilai === 'B').length}</strong></div>
+              <div>⚠️ Nilai C/D: <strong>${santriData.filter(s => s.nilai === 'C' || s.nilai === 'D').length}</strong></div>
+            </div>
+          </div>
+
+          <div class="footer">
+            <p class="arabic">جَزَاكَ اللَّهُ خَيْرًا</p>
+            <p>${config.announcement_footer}</p>
+            <p>© ${config.organization_name}</p>
+          </div>
+        </body>
+        </html>
+      `;
+
+      printWindow.document.write(html);
+      printWindow.document.close();
+      setTimeout(() => {
+        printWindow.print();
+      }, 250);
+    }
+
+    // Update statistics
+    function updateStats() {
+      document.getElementById('total-santri').textContent = santriData.length;
+      document.getElementById('nilai-a').textContent = santriData.filter(s => s.nilai === 'A').length;
+      document.getElementById('nilai-b').textContent = santriData.filter(s => s.nilai === 'B').length;
+      document.getElementById('nilai-cd').textContent = santriData.filter(s => s.nilai === 'C' || s.nilai === 'D').length;
+      document.getElementById('data-count').textContent = `${santriData.length} Data`;
+
+      // Show/hide send all button
+      const sendAllContainer = document.getElementById('send-all-container');
+      if (santriData.length > 0) {
+        sendAllContainer.classList.remove('hidden');
+        sendAllContainer.classList.add('flex');
+      } else {
+        sendAllContainer.classList.add('hidden');
+        sendAllContainer.classList.remove('flex');
+      }
+    }
+
+    // Render table
+    function renderTable() {
+      const tbody = document.getElementById('data-table-body');
+      const emptyState = document.getElementById('empty-state');
+      
+      if (santriData.length === 0) {
+        tbody.innerHTML = '';
+        emptyState.classList.remove('hidden');
+        emptyState.classList.add('block');
+        return;
+      }
+      
+      emptyState.classList.add('hidden');
+      emptyState.classList.remove('block');
+      
+      const sortedData = [...santriData].sort((a, b) => 
+        new Date(b.created_at) - new Date(a.created_at)
+      );
+      
+      tbody.innerHTML = sortedData.map((record, index) => `
+        <tr class="hover:bg-gray-50 transition-colors" data-id="${record.__backendId}">
+          <td class="px-6 py-4 text-sm text-gray-600">${index + 1}</td>
+          <td class="px-6 py-4">
+            <div class="font-medium text-gray-900">${record.nama_santri}</div>
+          </td>
+          <td class="px-6 py-4 text-sm text-gray-600">${record.hafalan_bulan_ini}</td>
+          <td class="px-6 py-4 text-sm text-gray-600">${record.total_hafalan}</td>
+          <td class="px-6 py-4">${getNilaiBadge(record.nilai)}</td>
+          <td class="px-6 py-4 text-sm text-gray-600">${record.nama_ustadz}</td>
+          <td class="px-6 py-4">
+            <div class="flex items-center justify-center">
+              <button onclick="openDeleteModal('${record.__backendId}', '${record.nama_santri}')"
+                class="inline-flex items-center gap-1 px-3 py-2 bg-red-100 text-red-700 text-sm font-medium rounded-lg hover:bg-red-200 transition-all"
+                title="Hapus Data">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                </svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+      
+      updateStats();
+    }
+
+    // Delete modal functions
+    function openDeleteModal(id, name) {
+      deleteTargetId = id;
+      document.getElementById('delete-santri-name').textContent = `Apakah Anda yakin ingin menghapus data "${name}"?`;
+      document.getElementById('delete-modal').classList.remove('hidden');
+      document.getElementById('delete-modal').classList.add('flex');
+    }
+
+    function closeDeleteModal() {
+      deleteTargetId = null;
+      document.getElementById('delete-modal').classList.add('hidden');
+      document.getElementById('delete-modal').classList.remove('flex');
+    }
+
+    async function confirmDelete() {
+      if (!deleteTargetId) return;
+      
+      const record = santriData.find(s => s.__backendId === deleteTargetId);
+      if (!record) {
+        closeDeleteModal();
+        return;
+      }
+
+      const btn = document.getElementById('confirm-delete');
+      btn.disabled = true;
+      btn.textContent = 'Menghapus...';
+
+      const result = await window.dataSdk.delete(record);
+      
+      btn.disabled = false;
+      btn.textContent = 'Ya, Hapus';
+      
+      if (result.isOk) {
+        showToast('Data santri berhasil dihapus', 'success');
+      } else {
+        showToast('Gagal menghapus data', 'error');
+      }
+      
+      closeDeleteModal();
+    }
+
+    // Data handler for SDK
+    const dataHandler = {
+      onDataChanged(data) {
+        santriData = data;
+        renderTable();
+        updateStats();
+        renderAnnouncementPreview();
+      }
+    };
+
+    // Form submission
+    async function handleFormSubmit(e) {
+      e.preventDefault();
+      
+      if (santriData.length >= 999) {
+        showToast('Batas maksimum 999 data telah tercapai!', 'error');
+        return;
+      }
+
+      const btn = document.getElementById('submit-btn');
+      const btnText = document.getElementById('submit-text');
+      btn.disabled = true;
+      btnText.textContent = 'Menyimpan...';
+
+      const formData = {
+        nama_santri: document.getElementById('nama_santri').value.trim(),
+        hafalan_bulan_ini: document.getElementById('hafalan_bulan_ini').value.trim(),
+        total_hafalan: document.getElementById('total_hafalan').value.trim(),
+        nilai: document.getElementById('nilai').value,
+        nama_ustadz: document.getElementById('nama_ustadz').value.trim(),
+        created_at: new Date().toISOString()
+      };
+
+      const result = await window.dataSdk.create(formData);
+      
+      btn.disabled = false;
+      btnText.textContent = 'Simpan Data';
+
+      if (result.isOk) {
+        showToast('Data hafalan santri berhasil disimpan!', 'success');
+        document.getElementById('input-form').reset();
+      } else {
+        showToast('Gagal menyimpan data. Silakan coba lagi.', 'error');
+      }
+    }
+
+    // Config change handler
+    async function onConfigChange(newConfig) {
+      config = { ...defaultConfig, ...newConfig };
+      
+      document.getElementById('app-title').textContent = config.app_title || defaultConfig.app_title;
+      document.getElementById('org-name').textContent = config.organization_name || defaultConfig.organization_name;
+      renderAnnouncementPreview();
+    }
+
+    // Tab switching
+    function switchTab(tabName) {
+      // Hide all tabs
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.add('hidden');
+      });
+
+      // Remove active class from all tab buttons
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('tab-active');
+        btn.classList.add('tab-inactive');
+      });
+
+      // Show selected tab
+      const tabContent = document.getElementById(`tab-content-${tabName}`);
+      if (tabContent) {
+        tabContent.classList.remove('hidden');
+      }
+
+      // Mark button as active
+      const tabBtn = document.getElementById(`tab-${tabName}`);
+      if (tabBtn) {
+        tabBtn.classList.add('tab-active');
+        tabBtn.classList.remove('tab-inactive');
+      }
+    }
+
+    // Initialize app
+    async function init() {
+      // Initialize Element SDK
+      if (window.elementSdk) {
+        window.elementSdk.init({
+          defaultConfig,
+          onConfigChange,
+          mapToCapabilities: (cfg) => ({
+            recolorables: [
+              {
+                get: () => cfg.background_color || defaultConfig.background_color,
+                set: (v) => { cfg.background_color = v; window.elementSdk.setConfig({ background_color: v }); }
+              },
+              {
+                get: () => cfg.header_color || defaultConfig.header_color,
+                set: (v) => { cfg.header_color = v; window.elementSdk.setConfig({ header_color: v }); }
+              },
+              {
+                get: () => cfg.text_color || defaultConfig.text_color,
+                set: (v) => { cfg.text_color = v; window.elementSdk.setConfig({ text_color: v }); }
+              },
+              {
+                get: () => cfg.primary_action_color || defaultConfig.primary_action_color,
+                set: (v) => { cfg.primary_action_color = v; window.elementSdk.setConfig({ primary_action_color: v }); }
+              },
+              {
+                get: () => cfg.secondary_color || defaultConfig.secondary_color,
+                set: (v) => { cfg.secondary_color = v; window.elementSdk.setConfig({ secondary_color: v }); }
+              }
+            ],
+            borderables: [],
+            fontEditable: undefined,
+            fontSizeable: undefined
+          }),
+          mapToEditPanelValues: (cfg) => new Map([
+            ['app_title', cfg.app_title || defaultConfig.app_title],
+            ['organization_name', cfg.organization_name || defaultConfig.organization_name],
+            ['admin_phone', cfg.admin_phone || defaultConfig.admin_phone],
+            ['announcement_title', cfg.announcement_title || defaultConfig.announcement_title],
+            ['announcement_footer', cfg.announcement_footer || defaultConfig.announcement_footer]
+          ])
+        });
+      }
+
+      // Initialize Data SDK
+      if (window.dataSdk) {
+        const initResult = await window.dataSdk.init(dataHandler);
+        if (!initResult.isOk) {
+          showToast('Gagal memuat data. Silakan refresh halaman.', 'error');
+        }
+      }
+
+      // Setup event listeners
+      document.getElementById('input-form').addEventListener('submit', handleFormSubmit);
+      document.getElementById('cancel-delete').addEventListener('click', closeDeleteModal);
+      document.getElementById('confirm-delete').addEventListener('click', confirmDelete);
+      document.getElementById('delete-modal').addEventListener('click', (e) => {
+        if (e.target === document.getElementById('delete-modal')) {
+          closeDeleteModal();
+        }
+      });
+
+      // Tab buttons
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          switchTab(btn.dataset.tab);
+        });
+      });
+
+      // Announcement buttons
+      document.getElementById('send-all-btn').addEventListener('click', sendAllToAdmin);
+      document.getElementById('print-btn').addEventListener('click', printAnnouncement);
+      document.getElementById('copy-btn').addEventListener('click', copyAnnouncementToClipboard);
+      document.getElementById('whatsapp-announcement-btn').addEventListener('click', sendAllToAdmin);
+
+      // Initial render
+      renderTable();
+      updateStats();
+      renderAnnouncementPreview();
+    }
+
+    // Start application
+    init();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c52e5822148ca88',t:'MTc2OTYyODU0NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
